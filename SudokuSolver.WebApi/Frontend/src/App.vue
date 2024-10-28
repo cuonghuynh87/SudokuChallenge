@@ -35,10 +35,9 @@
             </template>
           </v-snackbar>
           <h1>Solved Puzzle Table</h1>
-          <DxDataGrid :data-source="solvers" key-expr="Id" :column-auto-width="true">
-            <DxColumn data-field="Result" :fixed="true"></DxColumn>
-            <DxColumn data-field="CreatedDate" data-type="date" :fixed="true"></DxColumn>
-            <DxColumnFixing :enabled="true" />
+          <DxDataGrid :data-source="solvers" key-expr="Id" :column-auto-width="true" v-show="showPuzzleTable">
+            <DxColumn data-field="Result"></DxColumn>
+            <DxColumn data-field="CreatedDate" data-type="date"></DxColumn>
           </DxDataGrid>
         </div>
       </div>
@@ -50,7 +49,7 @@
 import Puzzle from './components/Puzzle.vue';
 import { solvePuzzle, preSolveLegalCheck } from './Solver';
 import axios from 'axios';
-import { DxDataGrid, DxColumn, DxColumnFixing } from 'devextreme-vue/data-grid';
+import { DxDataGrid, DxColumn } from 'devextreme-vue/data-grid';
 
 const Base_URL = 'http://localhost:5090/api/'
 
@@ -59,8 +58,7 @@ export default {
   components: {
     Puzzle,
     DxDataGrid,
-    DxColumn,
-    DxColumnFixing,
+    DxColumn
   },
   data: () => ({
     gridArray: [[0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -86,7 +84,8 @@ export default {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0]],
-    solvers: []
+    solvers: [],
+    showPuzzleTable: false
   }),
   async created() {
     await this.getSolvers();
@@ -121,7 +120,10 @@ export default {
       await axios
         .get(Base_URL + 'Solver')
         .then((response) => {
-          this.solvers = response.data;
+          if (response.data != null && response.data.length > 0) {
+            this.solvers = response.data;
+            this.showPuzzleTable = true;
+          }
         })
     },
     async addSolver() {
