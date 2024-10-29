@@ -63,6 +63,19 @@ namespace SudokuSolver.Test
         }
 
         [Fact]
+        public async Task GetSolvers_ServiceInvalid_ControllerNull()
+        {
+            // Arrange
+            _mockSolverService.Setup(x => x.GetSolvers()).Throws<ArgumentNullException>();
+
+            // Act
+            var controller = new SolverController(_mockSolverService.Object);
+
+            // Assert
+            Assert.Null(controller.HttpContext);
+        }
+
+        [Fact]
         public async Task AddSolvers_ListSolverValid_AddSuccess()
         {
             // Arrange
